@@ -13,7 +13,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::with('kelas')->paginate(10)->onEachSide(1);
+        $students = Student::with('kelas')->where('is_active', true)->paginate(10)->onEachSide(1);
         $students_count = Student::count();
         $kelas_count = Kelas::count();
         $active_student = Student::where('is_active', true)->count();

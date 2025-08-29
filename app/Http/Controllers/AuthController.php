@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Kelas;
+use App\Models\Student;
 
 class AuthController extends Controller
 {
@@ -14,7 +16,8 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed'
+            'password' => 'required|min:6|confirmed',
+            'role' => 'required|in:admin,guru,siswa'
         ]);
 
         User::create([
@@ -24,9 +27,31 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
             $request->session()->regenerate();
 
-            return redirect()->route('dashboard');
+            if (!$user->role) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => "Your account doesn't have an assigned role."
+                ]);
+            }
+
+            switch ($user->role) {
+                case 'admin':
+                    return view('dashboard', ['user' => $user]);
+                case 'guru':
+                    return view('dashboard', ['user' => $user]);
+                default:
+                    Auth::logout();
+                    return back()->withErrors([
+                        'email' => 'Unauthorized role.',
+                ]);
+            }
+
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ]);
         }
 
         return back()->withErrors([
@@ -38,13 +63,33 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6'
+            'password' => 'required'
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
+            $user = Auth::user();
 
-            return redirect()->route('dashboard');
+            if (!$user->role) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account does not have an assigned role.',
+                ]);
+            }
+
+            switch ($user->role) {
+                case 'admin':
+                    return view('dashboard', ['user' => $user]);
+                case 'guru':
+                    return view('dashboard', ['user' => $user]);
+                // case 'siswa':
+                //     return view('siswa.index', ['siswa' => $user]);
+                default:
+                    Auth::logout();
+                    return back()->withErrors([
+                        'email' => 'Unauthorized role.',
+                ]);
+            }
         }
 
         return back()->withErrors([
@@ -67,6 +112,39 @@ class AuthController extends Controller
         $user = Auth::user();
         return view('dashboard', compact('user'));
     }
+
+    public function studentPage() 
+    {
+        $students = Student::with('kelas')->paginate(10)->onEachSide(1);
+        $students_count = Student::count();
+        $kelas_count = Kelas::count();
+        $active_student = Student::where('is_active', true)->count();
+        $inactive_student = Student::where('is_active', false)->count();
+
+        return view('students', compact(
+            'students', 
+            'students_count', 
+            'active_student', 
+            'kelas_count',
+            'inactive_student'
+        ));
+    }
+
+    public function classPage()
+    {
+        return view('classes');
+    }
+    
+    public function gradePage()
+    {
+        return view('grades');
+    }
+
+    public function reportPage()
+    {
+        return view('reports');
+    }
+
 
     public function logout(Request $request)
     {

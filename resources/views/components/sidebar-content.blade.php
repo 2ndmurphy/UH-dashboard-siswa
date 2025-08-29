@@ -11,19 +11,19 @@
 
 		<!-- Navigation Menu -->
 		<nav class="space-y-2">
-				<x-nav-item :active="request()->is('dashboard')" href="/dashboard" icon="fas fa-tachometer-alt">
+				<x-nav-item :active="request()->is('dashboard')" href="{{ route('dashboard') }}" icon="fas fa-tachometer-alt">
 						Dashboard
 				</x-nav-item>
-				<x-nav-item :active="request()->is('students')" href="/students" icon="fas fa-users">
+				<x-nav-item :active="request()->is('students')" href="{{ route('students') }}" icon="fas fa-users">
 						Data Siswa
 				</x-nav-item>
-				<x-nav-item :active="request()->is('classes')" href="/classes" icon="fas fa-chalkboard">
+				<x-nav-item :active="request()->is('classes')" href="{{ route('classes') }}" icon="fas fa-chalkboard">
 						Kelas
 				</x-nav-item>
-				<x-nav-item :active="request()->is('grades')" href="/grades" icon="fas fa-chart-line">
+				<x-nav-item :active="request()->is('grades')" href="{{ route('grades') }}" icon="fas fa-chart-line">
 						Nilai
 				</x-nav-item>
-				<x-nav-item :active="request()->is('reports')" href="/reports" icon="fas fa-file-alt">
+				<x-nav-item :active="request()->is('reports')" href="{{ route('reports') }}" icon="fas fa-file-alt">
 						Laporan
 				</x-nav-item>
 		</nav>

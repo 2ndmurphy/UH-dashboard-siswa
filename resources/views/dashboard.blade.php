@@ -1,6 +1,6 @@
 <!-- Very little is needed to make a happy life. - Marcus Aurelius -->
 
-<x-layout headerTitle="Welcome {{ Auth::user()->name }}" pageTitle="Dashboard | SMKN 1 Jakarta">
+<x-layout headerTitle="Welcome {{ $user->name }}" pageTitle="Dashboard | SMKN 1 Jakarta">
 		<x-breadcrumb :items="[['label' => 'Home']]" />
 
 		<div class="absolute flex h-24 w-3/4 max-w-96 overflow-hidden rounded-xl bg-white shadow-lg">
